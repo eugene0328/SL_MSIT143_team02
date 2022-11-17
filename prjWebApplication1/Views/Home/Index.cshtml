@@ -18,7 +18,7 @@
             <div class="col-xl-4 col-lg-5 offset-xl-2 offset-lg-1">
                 <div class="booking-form">
                     <h3>訂下專屬你的房間</h3>
-                    <form action="#" name="myForm" onsubmit="return validateForm()" method="get">
+                    <form id="myForm" name="myForm" onsubmit="return validateForm()" method="get">
                         <div class="check-date">
                             <label for="date-in">入住時間:</label>
                             <input type="text" class="date-input" id="date-in" name="mydatein" required>
@@ -549,6 +549,16 @@
             $("#num").html("02");
             $("#roomnum").val(2);
             $("#roomnum").html("02");
+            let qty = Number($("#roomnum").val());
+            let datein = $("#date-in").val();
+            let dateout = $("#date-out").val();
+            var s = {
+                "txtQty": qty,
+                "datein": datein,
+                "dateout": dateout,
+            };
+            let datas = JSON.stringify(s);
+            $("#myForm").attr("action",'@Url.Action("TestListView","Room")')
         });
 
         //立即搜尋的按鈕進去到搜好房

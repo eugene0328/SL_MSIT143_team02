@@ -81,7 +81,7 @@ namespace PJ_MSIT143_team02.Controllers
             MingSuContext db = new MingSuContext();
             var Name = HttpContext.Session.GetString(CDictionary.SK_LOGINED_USER);
             var v = JsonSerializer.Deserialize<Member>(Name);
-            c.CommentStatus = "no";
+            c.CommentStatus = "yes";
             c.MemberAccount = v.MemberAccount;
             db.Comments.Add(c);
             db.SaveChanges();
