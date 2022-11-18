@@ -32,10 +32,24 @@ namespace PJ_MSIT143_team02.Controllers
             roomItem.rooms = db.Rooms.Select(r => r).ToList(); ;
             return View(roomItem);
         }
-        public IActionResult TestListView(/*CKeywordViewModel model*/int number)
+        public IActionResult TestListView(/*CKeywordViewModel model*/string input)
         {
             DateTime thisDate = new DateTime(0001, 1, 1);
             MingSuContext db = new MingSuContext();
+
+            IEnumerable<Room> datas = null;
+            if (!string.IsNullOrEmpty(input)) { 
+                CKeywordViewModel items = JsonSerializer.Deserialize<CKeywordViewModel>(input);
+                datas = (from r in db.Rooms
+                             join o in db.OrderDetails on r.RoomId equals o.RoomId
+                             into subGrp
+                             from s in subGrp.DefaultIfEmpty()
+                             where r.Qty.Equals(items.txtQty)
+                             || s.OrderStartDate != Convert.ToDateTime(items.datein)
+                             || s.OrderEndDate != Convert.ToDateTime(items.dateout)
+                             select r).ToList();
+                return View(datas);
+            }           
 
             CKeywordViewModel ck = new CKeywordViewModel();
             var Equipment = db.Equipment;
@@ -46,13 +60,12 @@ namespace PJ_MSIT143_team02.Controllers
             ck.Room = Room; //RoomID
 
             IEnumerable<EquipmentReference> eqr = null;
-            if (string.IsNullOrEmpty(ck.txtKeyword))
+            if (string.IsNullOrEmpty(ck.Equipment.FirstOrDefault().EquipmentName))
                 eqr = (from r in db.EquipmentReferences
                        join i in db.Equipment on r.EquipmentId equals i.EquipmentId
                        join k in db.Rooms on r.RoomId equals k.RoomId
                        select r).ToList();
 
-            IEnumerable<Room> datas = null;
             if (string.IsNullOrEmpty(ck.txtKeyword))
             {
                 if (0.Equals(ck.txtQty)
@@ -172,21 +185,6 @@ namespace PJ_MSIT143_team02.Controllers
             //return View("TestListView", datas.Where(e => e.RoomstatusId != 5));
             return View("TestListView", ck);
 
-        }
-        [HttpPost]
-        public IActionResult TestListView(string input)
-        {
-            CKeywordViewModel items = JsonSerializer.Deserialize<CKeywordViewModel>(input);
-            MingSuContext db = new MingSuContext();
-            var datas = (from r in db.Rooms
-                         join o in db.OrderDetails on r.RoomId equals o.RoomId
-                         into subGrp
-                         from s in subGrp.DefaultIfEmpty()
-                         where r.Qty.Equals(items.txtQty)
-                         || s.OrderStartDate != Convert.ToDateTime(items.datein)
-                         || s.OrderEndDate != Convert.ToDateTime(items.dateout)
-                         select r).ToList();
-            return View(datas);
         }
         [HttpGet]
         public ActionResult forEquipment(string Equipment)
