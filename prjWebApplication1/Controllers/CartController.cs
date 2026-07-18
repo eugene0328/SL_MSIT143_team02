@@ -86,22 +86,18 @@ namespace PJ_MSIT143_team02.Controllers
             CCartCartItem couponItem = JsonSerializer.Deserialize<CCartCartItem>(input);
             MingSuContext db = new MingSuContext();
 
-            try
-            {
-                var discount = db.Discounts.Single(x => x.Coupon.Equals(couponItem.Coupon));
+            var discount = db.Discounts.SingleOrDefault(x => x.Coupon.Equals(couponItem.Coupon));
             
-                房源及會員 item = new 房源及會員()
-                {
-                    DisPrice = couponItem.DisPrice * discount.DiscountValue,
-                    Discount = discount,
-                };
-
-                return Content(item.DisPrice.ToString());
-            }
-            catch (InvalidOperationException e)
-            {
+            if(discount == null)
                 return Content(couponItem.DisPrice.ToString());
-            }
+
+            房源及會員 item = new 房源及會員()
+            {
+                DisPrice = couponItem.DisPrice * discount.DiscountValue,
+                Discount = discount,
+            };
+
+            return Content(item.DisPrice.ToString());
         }
 
         public IActionResult RemoveItem(int id)
