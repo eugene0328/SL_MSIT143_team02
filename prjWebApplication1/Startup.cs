@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PJ_MSIT143_team02.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace PJ_MSIT143_team02
             services.AddHttpContextAccessor();
             services.AddControllersWithViews();
             services.AddSession();
+            services.Add(new ServiceDescriptor(typeof(DiscountService), new DiscountService()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
