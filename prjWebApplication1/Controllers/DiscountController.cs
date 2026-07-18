@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PJ_MSIT143_team02.ViewModels;
 using PJ_MSIT143_team02.Models;
 using PJ_MSIT143_team02.Services;
-using PJ_MSIT143_team02.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
