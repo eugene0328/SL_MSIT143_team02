@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PJ_MSIT143_team02.ViewModels;
 using PJ_MSIT143_team02.Models;
+using PJ_MSIT143_team02.Services;
+using PJ_MSIT143_team02.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,18 @@ namespace PJ_MSIT143_team02.Controllers
 {
     public class DiscountController : Controller
     {
+        private DiscountService service;
+
+        public DiscountService discountService { 
+            get {
+                service = HttpContext.RequestServices.GetService(typeof(DiscountService)) as DiscountService;
+                return service;
+            } 
+        }
+
         public IActionResult DiscountMain()
         {
-            var data = queryAll();
+            var data = discountService.queryAll();
             return View(data);
         }
 
@@ -20,8 +30,7 @@ namespace PJ_MSIT143_team02.Controllers
         {
             if (Id != null)
             {
-                MingSuContext db = new MingSuContext();
-                var d = db.Discounts.Where(d => d.RoomDiscountId == Id);
+                var d = discountService.details(Id);
                 if (d != null)
                     return View(d.ToList());
             }
@@ -30,7 +39,7 @@ namespace PJ_MSIT143_team02.Controllers
 
         public IActionResult DiscountAdmin()
         {
-            var data = queryAll();
+            var data = discountService.queryAll();
             return View(data);
         }
         [HttpPost]
@@ -38,14 +47,9 @@ namespace PJ_MSIT143_team02.Controllers
         {
             IEnumerable<Discount> data;
             if (string.IsNullOrEmpty(model.txtKey))
-                data = queryAll();
+                data = discountService.queryAll();
             else
-                data = from d in (new MingSuContext()).Discounts
-                       where (d.DiscountInfo.Contains(model.txtKey) ||
-                       d.DiscountName.Contains(model.txtKey) ||
-                       d.DiscountValue.ToString().Contains(model.txtKey) ||
-                       d.Coupon.Contains(model.txtKey))
-                       select d;
+                data = discountService.query(model);
             return View(data);
         }
 
@@ -59,21 +63,13 @@ namespace PJ_MSIT143_team02.Controllers
             if (string.IsNullOrEmpty(d.DiscountInfo) || string.IsNullOrEmpty(d.DiscountName)
                 || string.IsNullOrEmpty(d.DiscountValue.ToString()))
                 return View();
-            MingSuContext db = new MingSuContext();
-            db.Discounts.Add(d);
-            db.SaveChanges();
+            discountService.create(d);
             return RedirectPermanent("DiscountAdmin");
         }
 
         public IActionResult Delete(int? Id)
         {
-            MingSuContext db = new MingSuContext();
-            Discount d = db.Discounts.FirstOrDefault(d => d.RoomDiscountId == Id);
-            if (d != null)
-            {
-                db.Discounts.Remove(d);
-                db.SaveChanges();
-            }
+            discountService.delete(Id);
             return RedirectToAction("DiscountAdmin");
         }
 
@@ -81,8 +77,7 @@ namespace PJ_MSIT143_team02.Controllers
         {
             if (Id != null)
             {
-                MingSuContext db = new MingSuContext();
-                Discount d = db.Discounts.FirstOrDefault(d => d.RoomDiscountId == Id);
+                Discount d = discountService.editById(Id);
                 if (d != null)
                     return View(d);
             }
@@ -91,23 +86,8 @@ namespace PJ_MSIT143_team02.Controllers
         [HttpPost]
         public IActionResult Edit(DisViewModel input)
         {
-            MingSuContext db = new MingSuContext();
-            Discount d = db.Discounts.FirstOrDefault(d => d.RoomDiscountId == input.Id);
-            if (d != null)
-            {
-                d.DiscountInfo = input.DiscountInfo;
-                d.DiscountName = input.DiscountName;
-                d.DiscountValue = input.DiscountValue;
-                d.Coupon = input.Coupon;
-                db.SaveChanges();
-            }
+            discountService.edit(input);
             return RedirectToAction("DiscountAdmin");
-        }
-        public IEnumerable<Discount> queryAll()
-        {
-            var data = from d in (new MingSuContext()).Discounts
-                       select d;
-            return data;
         }
     }
 }
