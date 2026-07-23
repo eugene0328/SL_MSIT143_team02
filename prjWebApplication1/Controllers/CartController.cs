@@ -95,17 +95,13 @@ namespace PJ_MSIT143_team02.Controllers
             CCartCartItem couponItem = JsonSerializer.Deserialize<CCartCartItem>(input);
 
             Discount discount = cartService.queryCoupon(couponItem);
+
+            房源及會員 roomAndMember = cartService.roomAndMember;
             
             if(discount == null)
                 return Content(couponItem.DisPrice.ToString());
 
-            房源及會員 item = new 房源及會員()
-            {
-                DisPrice = couponItem.DisPrice * discount.DiscountValue,
-                Discount = discount,
-            };
-
-            return Content(item.DisPrice.ToString());
+            return Content(roomAndMember.DisPrice.ToString());
         }
 
         public IActionResult RemoveItem(int id)
