@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PJ_MSIT143_team02.Helpers;
 using PJ_MSIT143_team02.Models;
+using PJ_MSIT143_team02.Services;
 using PJ_MSIT143_team02.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,14 @@ namespace PJ_MSIT143_team02.Controllers
 {
     public class CartController : Controller
     {
+        private CartService _service;
+
+        public CartService cartService { 
+            get {
+                _service = HttpContext.RequestServices.GetService(typeof(CartService)) as CartService;
+                return _service;
+            }
+        }
 
         public IActionResult Index()
         {
@@ -84,9 +93,8 @@ namespace PJ_MSIT143_team02.Controllers
         public IActionResult AddCouponToCart(string input)
         {
             CCartCartItem couponItem = JsonSerializer.Deserialize<CCartCartItem>(input);
-            MingSuContext db = new MingSuContext();
 
-            var discount = db.Discounts.SingleOrDefault(x => x.Coupon.Equals(couponItem.Coupon));
+            Discount discount = cartService.queryCoupon(couponItem);
             
             if(discount == null)
                 return Content(couponItem.DisPrice.ToString());

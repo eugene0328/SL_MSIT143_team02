@@ -11,12 +11,12 @@ namespace PJ_MSIT143_team02.Controllers
 {
     public class DiscountController : Controller
     {
-        private DiscountService service;
+        private DiscountService _service;
 
         public DiscountService discountService { 
             get {
-                service = HttpContext.RequestServices.GetService(typeof(DiscountService)) as DiscountService;
-                return service;
+                _service = HttpContext.RequestServices.GetService(typeof(DiscountService)) as DiscountService;
+                return _service;
             } 
         }
 

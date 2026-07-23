@@ -27,6 +27,7 @@ namespace PJ_MSIT143_team02
             services.AddHttpContextAccessor();
             services.AddControllersWithViews();
             services.AddSession();
+            services.Add(new ServiceDescriptor(typeof(CartService), new CartService()));
             services.Add(new ServiceDescriptor(typeof(DiscountService), new DiscountService()));
         }
 
