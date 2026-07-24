@@ -1,5 +1,6 @@
 ﻿using PJ_MSIT143_team02.Models;
 using PJ_MSIT143_team02.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PJ_MSIT143_team02.Services
@@ -21,6 +22,16 @@ namespace PJ_MSIT143_team02.Services
                        d.DiscountValue.ToString().Contains(model.txtKey) ||
                        d.Coupon.Contains(model.txtKey))
                        select d;
+            return data;
+        }
+
+        public List<Discount> queryTop3() {
+            var data = (from d in (new MingSuContext()).Discounts
+                        select new Discount
+                        {
+                            RoomDiscountId = d.RoomDiscountId,
+                            DiscountName = d.DiscountName
+                        }).Take(3).ToList();
             return data;
         }
 
